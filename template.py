@@ -13,3 +13,5 @@ data = [
     line.strip()
     for line in inpstring
 ]
+
+# data = open(local_data_path).read().strip().split("\n")
