@@ -7,6 +7,8 @@ download_data_path = Path("/Users/relyea/Downloads/input.txt")
 local_data_path = "/Users/relyea/code/advent_of_code_2022/input"+str(the_day)+".txt"
 if download_data_path.exists():
     download_data_path.rename(local_data_path)
+
+# local_data_path = "/Users/relyea/code/advent_of_code_2022/input"+str(the_day)+"_test.txt"
 with open(local_data_path) as input_file:
     inpstring = input_file.readlines()
 
@@ -56,11 +58,23 @@ while iline < len(data)-1:
             print('NOW', current_dir)
 
 dir_sizes = dict()
-for dir in all_files:
-    if dir == '.':
-        continue
-    basedir = dir.split('/')[1]
-    if basedir not in dir_sizes:
-        dir_sizes[basedir] = 0
+sorted_dirs = sorted(all_files.keys(),key=len)[::-1]
+
+for dir in sorted_dirs:
+    dir_sizes[dir] = 0
     for file in all_files[dir].files:
-        dir_sizes[basedir] += all_files[dir].files[file]
+        dir_sizes[dir] += all_files[dir].files[file]
+    for subdir in all_files[dir].dirs:
+        dir_sizes[dir] += dir_sizes[subdir]
+
+total_size_gt_100k = 0
+for dir in dir_sizes:
+    if dir_sizes[dir] <= 100000:
+        total_size_gt_100k += dir_sizes[dir]
+print(total_size_gt_100k)
+
+space_to_free = dir_sizes['.']-40000000
+max_delete = dir_sizes['.']
+for dir in dir_sizes:
+    if dir_sizes[dir] < max_delete and dir_sizes[dir] > space_to_free:
+        max_delete = dir_sizes[dir]
